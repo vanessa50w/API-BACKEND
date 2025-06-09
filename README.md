@@ -2,13 +2,13 @@
 
 API simples em PHP para buscar a média da taxa SELIC via Banco Central e armazenar no banco de dados.
 
-### 📦 Requisitos
+### Requisitos
 
 - PHP 7.4+
 - MySQL
 - Servidor Apache ou PHP embutido
 
-### 📁 Estrutura
+### Estrutura
 
 - Endpoint: `PUT /juros`
 - Entrada: JSON com `dataInicio` e `dataFinal`
@@ -17,7 +17,7 @@ API simples em PHP para buscar a média da taxa SELIC via Banco Central e armaze
   - `dataInicio <= dataFinal`
   - `dataFinal <= hoje`
 
-### 📌 Exemplo de Requisição
+### Exemplo de Requisição
 
 ```bash
 curl -X PUT http://localhost/juros \

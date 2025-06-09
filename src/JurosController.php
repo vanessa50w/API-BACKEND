@@ -10,7 +10,6 @@ class JurosController {
         $dataInicio = $input['dataInicio'] ?? null;
         $dataFinal = $input['dataFinal'] ?? null;
 
-        // Validações
         if (!$dataInicio || !$dataFinal) {
             http_response_code(400);
             echo json_encode(['erro' => 'Campos dataInicio e dataFinal são obrigatórios.']);
