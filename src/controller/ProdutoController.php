@@ -63,19 +63,29 @@ class ProdutoController {
         try {
             $dados = $request->getParsedBody();
 
+            if ($dados === null) { // JSON inválido ou não enviado
+            return $response->withStatus(400);
+        }
+
             if (empty($dados['id'])) {
             $dados['id'] = gerarUuidV4(); // ou use ramsey/uuid
         }
 
+            if (isset($dados['valor']) && $dados['valor'] < 0) {
+            return $response->withStatus(422);
+        }
+
             if (!isset($dados['id']) || !self::validarUUID($dados['id'])) {
-            $response->getBody()->write(json_encode(['erro' => 'ID deve estar no formato UUID']));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+            return $response->withStatus(422);
         }
             
             if (!isset($dados['nome']) || !isset($dados['valor'])) {
-                $response->getBody()->write(json_encode(['erro' => 'Nome e valor são obrigatórios']));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                return $response->withStatus(422);
             }
+
+            if ($dados === null) { // JSON inválido ou não enviado
+            return $response->withStatus(400);
+        }
             
             $produto = new Produto(
                 $dados['id'],
@@ -84,13 +94,11 @@ class ProdutoController {
                 $dados['tipo'] ?? null
             );
             
-            $produtoCriado = $this->produtoDAO->criar($produto);
+            $this->produtoDAO->criar($produto);
             
-            $response->getBody()->write(json_encode($produtoCriado->toArray()));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+            return $response->withStatus(201);
         } catch (Exception $e) {
-            $response->getBody()->write(json_encode(['erro' => $e->getMessage()]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            return $response->withStatus(400);
         }
     }
 
@@ -98,6 +106,10 @@ class ProdutoController {
         try {
             $id = $args['id'];
             $dados = $request->getParsedBody();
+
+            if (isset($dados['valor']) && $dados['valor'] < 0) {
+            return $response->withStatus(422);
+        }
             
             $produto = $this->produtoDAO->buscarPorId($id);
             if (!$produto) {
