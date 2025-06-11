@@ -8,6 +8,17 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 
+function gerarUuidV4() {
+    return sprintf(
+        '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+        mt_rand(0, 0xffff),
+        mt_rand(0, 0x0fff) | 0x4000,
+        mt_rand(0, 0x3fff) | 0x8000,
+        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+    );
+}
+
 class ProdutoController {
     private $produtoDAO;
 
@@ -51,17 +62,26 @@ class ProdutoController {
     public function criar(Request $request, Response $response) {
         try {
             $dados = $request->getParsedBody();
+
+            if (empty($dados['id'])) {
+            $dados['id'] = gerarUuidV4(); // ou use ramsey/uuid
+        }
+
+            if (!isset($dados['id']) || !self::validarUUID($dados['id'])) {
+            $response->getBody()->write(json_encode(['erro' => 'ID deve estar no formato UUID']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+        }
             
-            if (!isset($dados['nome']) || !isset($dados['preco'])) {
-                $response->getBody()->write(json_encode(['erro' => 'Nome e preço são obrigatórios']));
+            if (!isset($dados['nome']) || !isset($dados['valor'])) {
+                $response->getBody()->write(json_encode(['erro' => 'Nome e valor são obrigatórios']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
             
             $produto = new Produto(
+                $dados['id'],
                 $dados['nome'],
-                $dados['preco'],
-                $dados['descricao'] ?? null,
-                $dados['categoria'] ?? null
+                $dados['valor'],
+                $dados['tipo'] ?? null
             );
             
             $produtoCriado = $this->produtoDAO->criar($produto);
@@ -86,9 +106,8 @@ class ProdutoController {
             }
             
             $produto->setNome($dados['nome'] ?? $produto->getNome());
-            $produto->setPreco($dados['preco'] ?? $produto->getPreco());
-            $produto->setDescricao($dados['descricao'] ?? $produto->getDescricao());
-            $produto->setCategoria($dados['categoria'] ?? $produto->getCategoria());
+            $produto->setValor($dados['valor'] ?? $produto->getValor());
+            $produto->setTipo($dados['tipo'] ?? $produto->getTipo());
             
             $this->produtoDAO->atualizar($produto);
             
@@ -119,4 +138,10 @@ class ProdutoController {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
+    // Função para validar UUID simples
+private static function validarUUID($uuid)
+{
+    return preg_match('/^[a-f0-9\-]{36}$/i', $uuid);
+}
 }

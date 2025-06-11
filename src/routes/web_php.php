@@ -2,7 +2,7 @@
 
 use Src\Controller\ProdutoController;
 
-require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../config/conexao_php.php';
 
 $produtoController = new ProdutoController();
 

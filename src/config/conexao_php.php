@@ -2,10 +2,16 @@
 
 class Conexao {
     private static $host = 'localhost';
-    private static $dbname = 'produto_db';
+    private static $dbname = 'loja';
     private static $username = 'root';
     private static $password = '';
     private static $pdo = null;
+
+    // Construtor privado - impede new Conexao()
+    private function __construct() {}
+
+    // Impede clonagem
+    private function __clone() {}
 
     public static function getConnection() {
         if (self::$pdo === null) {

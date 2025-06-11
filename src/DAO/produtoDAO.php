@@ -16,16 +16,15 @@ class ProdutoDAO {
 
     public function criar(Produto $produto) {
         try {
-            $sql = "INSERT INTO produtos (nome, preco, descricao, categoria) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO produtos (id, nome, valor, tipo) VALUES (?, ?, ?, ?)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
+                $produto->getId(),
                 $produto->getNome(),
-                $produto->getPreco(),
-                $produto->getDescricao(),
-                $produto->getCategoria()
+                $produto->getValor(),
+                $produto->getTipo()
             ]);
             
-            $produto->setId($this->pdo->lastInsertId());
             return $produto;
         } catch (Exception $e) {
             throw new Exception("Erro ao criar produto: " . $e->getMessage());
@@ -39,12 +38,11 @@ class ProdutoDAO {
             $produtos = [];
             
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $produto = new Produto();
+                $produto = new Produto($row['id'], $row['nome'], $row['valor'], $row['tipo'] ?? null);
                 $produto->setId($row['id']);
                 $produto->setNome($row['nome']);
-                $produto->setPreco($row['preco']);
-                $produto->setDescricao($row['descricao']);
-                $produto->setCategoria($row['categoria']);
+                $produto->setValor($row['valor']);
+                $produto->setTipo($row['tipo']);
                 $produtos[] = $produto;
             }
             
@@ -62,12 +60,11 @@ class ProdutoDAO {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($row) {
-                $produto = new Produto();
+                $produto = new Produto($row['id'], $row['nome'], $row['valor'], $row['tipo'] ?? null);
                 $produto->setId($row['id']);
                 $produto->setNome($row['nome']);
-                $produto->setPreco($row['preco']);
-                $produto->setDescricao($row['descricao']);
-                $produto->setCategoria($row['categoria']);
+                $produto->setValor($row['valor']);
+                $produto->setTipo($row['tipo']);
                 return $produto;
             }
             
@@ -79,13 +76,12 @@ class ProdutoDAO {
 
     public function atualizar(Produto $produto) {
         try {
-            $sql = "UPDATE produtos SET nome = ?, preco = ?, descricao = ?, categoria = ? WHERE id = ?";
+            $sql = "UPDATE produtos SET nome = ?, valor = ?, tipo = ? WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
             $result = $stmt->execute([
                 $produto->getNome(),
-                $produto->getPreco(),
-                $produto->getDescricao(),
-                $produto->getCategoria(),
+                $produto->getValor(),
+                $produto->getTipo(),
                 $produto->getId()
             ]);
             
