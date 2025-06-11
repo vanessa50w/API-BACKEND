@@ -11,6 +11,9 @@ class Parcela
     private $dataVencimento;
     private $situacao;
     private $dataPagamento;
+    private $taxaJuros;
+    private $createdAt;
+    private $updatedAt;
 
     public function __construct($id = null, $idCompra = null, $numeroParcela = null, 
                               $valorParcela = null, $dataVencimento = null, 
@@ -33,6 +36,15 @@ class Parcela
     public function getDataVencimento() { return $this->dataVencimento; }
     public function getSituacao() { return $this->situacao; }
     public function getDataPagamento() { return $this->dataPagamento; }
+    public function getTaxaJuros() {
+        return $this->taxaJuros;
+    }
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+    public function getUpdatedAt() {
+        return $this->updatedAt;
+    }
 
     // Setters
     public function setId($id) { $this->id = $id; }
@@ -42,6 +54,15 @@ class Parcela
     public function setDataVencimento($dataVencimento) { $this->dataVencimento = $dataVencimento; }
     public function setSituacao($situacao) { $this->situacao = $situacao; }
     public function setDataPagamento($dataPagamento) { $this->dataPagamento = $dataPagamento; }
+    public function setTaxaJuros($taxaJuros) {
+        $this->taxaJuros = $taxaJuros;
+    }
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+    }
+    public function setUpdatedAt($updatedAt) {
+        $this->updatedAt = $updatedAt;
+    }
 
     public function toArray() 
     {

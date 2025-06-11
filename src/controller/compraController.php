@@ -9,6 +9,8 @@ use Src\DAO\ProdutoDAO;
 use Src\DAO\ParcelaDAO;
 use Src\Service\ParcelasService;
 use Exception;
+use function Src\Utils\gerarUuidV4;
+
 
 class CompraController
 {
@@ -29,6 +31,14 @@ class CompraController
     {
         try {
             $dados = $request->getParsedBody();
+
+            if (empty($dados['id'])) {
+            $dados['id'] = gerarUuidV4(); // ou use ramsey/uuid
+        }
+
+        if (!isset($dados['id']) || !self::validarUUID($dados['id'])) {
+            return $response->withStatus(422);
+        }
 
             // Validar JSON
             if (!$dados || !is_array($dados)) {
@@ -68,7 +78,7 @@ class CompraController
                 return $response->withStatus(422)->withHeader('Content-Type', 'application/json');
             }
 
-            $valorProduto = floatval($produto['valor']);
+            $valorProduto = floatval($produto->getValor());
 
             // Validar valor de entrada
             if ($valorEntrada > $valorProduto) {
@@ -290,4 +300,9 @@ class CompraController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
+    private static function validarUUID($uuid)
+{
+    return preg_match('/^[a-f0-9\-]{36}$/i', $uuid);
+}
 }

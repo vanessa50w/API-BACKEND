@@ -3,7 +3,7 @@
 namespace Src\DAO;
 
 use Src\Model\Produto;
-use Conexao;
+use Src\Config\Conexao;
 use PDO;
 use Exception;
 

@@ -12,7 +12,7 @@ class CompraDAO
 
     public function __construct()
     {
-        $this->conexao = Conexao::conectar();
+        $this->conexao = Conexao::getConnection();
     }
 
     public function criar($id, $valorEntrada, $qtdParcelas, $idProduto)
